@@ -914,6 +914,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1464419973}
+  - component: {fileID: 1464419974}
   m_Layer: 0
   m_Name: Tower
   m_TagString: Untagged
@@ -937,6 +938,22 @@ Transform:
   - {fileID: 2200460318495001468}
   m_Father: {fileID: 20901194}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1464419974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1464419972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cef10fbc6814d9fa598d4bc692a93b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimpleTowerGenerator
+  segmentPrefab: {fileID: 8124196946227854450, guid: e0dcc32a2c69c62459f26a1b07549dca, type: 3}
+  cameraTransform: {fileID: 110309074}
+  segmentHeight: 1
+  drawDistance: 7
 --- !u!1 &1630021934
 GameObject:
   m_ObjectHideFlags: 0
