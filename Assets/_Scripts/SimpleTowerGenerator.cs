@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 public class SimpleTowerGenerator : MonoBehaviour
 {
-    public GameObject segmentPrefab;
+    public BasicObjectPooler objectPooler;  // Reference to the Object Pooler.
     public Transform cameraTransform; 
     public float segmentHeight = 2.0f;
     public int drawDistance = 6;   
-    
 
     private List<GameObject> activeSegments = new List<GameObject>();
     private float nextSpawnY;
@@ -42,14 +41,18 @@ public class SimpleTowerGenerator : MonoBehaviour
         {
             GameObject oldest = activeSegments[0];
             activeSegments.RemoveAt(0);
-            Destroy(oldest);
+            objectPooler.ReturnObject(oldest);  // Return the segment to the pool.
         }
     }
 
     void SpawnNewSegment()
     {
-        GameObject newSeg = Instantiate(segmentPrefab, new Vector3(0, nextSpawnY, 0), Quaternion.identity, transform);
-        activeSegments.Add(newSeg);
-        nextSpawnY += segmentHeight;
+        GameObject newSeg = objectPooler.GetPooledObject();  // Get a segment from the pool.
+        if (newSeg != null)
+        {
+            newSeg.transform.position = new Vector3(0, nextSpawnY, 0);
+            activeSegments.Add(newSeg);
+            nextSpawnY += segmentHeight;
+        }
     }
 }
