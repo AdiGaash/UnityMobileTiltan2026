@@ -48,11 +48,20 @@ public class SimpleTowerGenerator : MonoBehaviour
     void SpawnNewSegment()
     {
         GameObject newSeg = objectPooler.GetPooledObject();  // Get a segment from the pool.
+        
         if (newSeg != null)
         {
             newSeg.transform.position = new Vector3(0, nextSpawnY, 0);
             activeSegments.Add(newSeg);
             nextSpawnY += segmentHeight;
+            
+            SegmentPopulator populator = newSeg.GetComponent<SegmentPopulator>();
+            if (populator != null)            {
+                populator.AttachSubObjects();  // Populate the segment with sub-objects.
+            }
         }
+        
+       
+        
     }
 }
