@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class TaggedObjectPooler : MonoBehaviour
+public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
 {
     [System.Serializable]
     public class Pool
