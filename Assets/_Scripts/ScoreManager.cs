@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public class ScoreManager : Singleton<ScoreManager>
+public class ScoreManager : MonoBehaviour
 {
     [SerializeField] private IntVariable scoreVariable;
 
-    public UnityEvent<int> OnScoreUpdated = new UnityEvent<int>();
+    
 
     private void Start()
     {
@@ -32,7 +32,7 @@ public class ScoreManager : Singleton<ScoreManager>
     
     private void HandleScoreChanged(int newScore)
     {
-        OnScoreUpdated.Invoke(newScore);
+        
         Debug.Log($"Score updated to: {newScore}");
     }
 }
