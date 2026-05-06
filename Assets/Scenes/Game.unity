@@ -1017,7 +1017,7 @@ MonoBehaviour:
   cameraTransform: {fileID: 110309074}
   segmentHeight: 1
   drawDistance: 6
-  towerParameters: {fileID: 11400000, guid: 67cf6505b4316a1438af1076457ff646, type: 2}
+  towerParameters: {fileID: 11400000, guid: 9350333fadee7fc489214894de0193f9, type: 2}
 --- !u!1 &1630021934
 GameObject:
   m_ObjectHideFlags: 0
