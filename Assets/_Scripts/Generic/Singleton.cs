@@ -54,7 +54,7 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             // If no instance is set, this object is the singleton
             _instance = this as T;
             DontDestroyOnLoad(gameObject); // Ensure the singleton persists across scenes
-            Debug.Log("singleton is created");
+            Debug.Log("singleton" + gameObject.name + " is created");
         }
         else
         {
