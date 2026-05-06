@@ -15,20 +15,12 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
 
     private Dictionary<string, Queue<GameObject>> pooledObjects;  // A dictionary to hold pooled objects by tags.
 
-    public static TaggedObjectPooler Instance { get; private set; }
+    
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-
+        base.Awake();
+        
         pooledObjects = new Dictionary<string, Queue<GameObject>>();
 
         foreach (Pool pool in pools)

@@ -12,7 +12,7 @@ public class SegmentPopulator : MonoBehaviour
     {
         foreach (Transform face in faceTransforms)
         {
-            for (int i = 0; i < face.childCount; i++) // Assuming six positions per face
+            for (int i = 0; i < face.childCount-1; i++) // Assuming six positions per face
             {
                 Transform positionTransform = face.GetChild(i);
                 GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("ladders"); // Get a sub-object from the pool
@@ -26,7 +26,7 @@ public class SegmentPopulator : MonoBehaviour
     {
         Transform face = faceTransforms[faceNum];
 
-        for (int i = 0; i < face.childCount; i++) // Assuming six positions per face
+        for (int i = 0; i < face.childCount-1; i++) // Assuming six positions per face
         {
             if (laddersSlots[i])
             {

@@ -3,7 +3,7 @@
 
     public class PlayerControl : MonoBehaviour
     {
-
+        
         Transform playerTransform;
          
         void Awake()
