@@ -34,6 +34,9 @@ public class SegmentPopulator : MonoBehaviour
                 GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("ladders"); // Get a sub-object from the pool
                 subObject.transform.parent = positionTransform;
                 subObject.transform.localPosition = Vector3.zero; // Reset local position to align with the parent
+                // random if to add collectable and to postion so the subobject transform will be the parent
+                
+                
             }
         }
         
@@ -50,6 +53,8 @@ public class SegmentPopulator : MonoBehaviour
                 if (positionTransform.childCount > 0)
                 {
                     GameObject subObject = positionTransform.GetChild(0).gameObject; // Assuming one sub-object per position
+                    // check if there are child and if so return to pool
+                    
                     TaggedObjectPooler.Instance.ReturnObject(subObject, "ladders"); // Return the sub-object to the pool
                 }
             }

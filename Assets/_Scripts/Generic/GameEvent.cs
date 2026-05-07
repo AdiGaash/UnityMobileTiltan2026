@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 public class GameEvent : ScriptableObject
 {
-    protected UnityEvent eventInvoked;
+    [SerializeField] protected UnityEvent eventInvoked = new UnityEvent();
     
     public virtual void Raise() => eventInvoked?.Invoke();
     public virtual void Subscribe(UnityAction listener) => eventInvoked.AddListener(listener);
@@ -12,7 +12,7 @@ public class GameEvent : ScriptableObject
 
 public class GameEvent<T> : ScriptableObject
 {
-    protected UnityEvent<T> eventInvoked;
+    [SerializeField] protected UnityEvent<T> eventInvoked = new UnityEvent<T>();
     
     public virtual void Raise(T value) => eventInvoked?.Invoke(value);
     public virtual void Subscribe(UnityAction<T> listener) => eventInvoked.AddListener(listener);
