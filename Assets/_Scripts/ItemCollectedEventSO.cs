@@ -13,3 +13,5 @@ public class ItemCollectedEventSO : ScriptableObject
         OnRaised?.Invoke();
     }
 }
+
+
