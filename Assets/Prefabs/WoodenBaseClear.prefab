@@ -811,7 +811,6 @@ GameObject:
   - component: {fileID: 7253523317702483155}
   - component: {fileID: 6233609293987976942}
   - component: {fileID: 2139967380446788191}
-  - component: {fileID: 5900917328346686655}
   - component: {fileID: 7874399285008011185}
   m_Layer: 0
   m_Name: WoodenBaseClear
@@ -896,27 +895,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5900917328346686655
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8124196946227854450}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &7874399285008011185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1035,6 +1013,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8763711140529835913}
     m_Modifications:
+    - target: {fileID: 5068646022528061088, guid: fa7de9579b9eb8347b77386f79a63f96, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7244570745278725751, guid: fa7de9579b9eb8347b77386f79a63f96, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

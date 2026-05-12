@@ -1,93 +1,247 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [Header("Settings")]
-    public float moveSpeed = 5f;
-    public float climbSpeed = 5f;
-    public LayerMask ladderLayer;
-    public LayerMask groundLayer;
+    public enum MovementMode
+    {
+        Platform,
+        Ladder
+    }
 
-    private int ladderCount = 0;
-    private int groundCount = 0;
-    private int pendingLadderExits = 0; // Track exits pending for this frame
-    private int pendingGroundExits = 0; // Track exits pending for this frame
+    [Header("Movement")]
+    [SerializeField]
+    private float horizontalSpeed = 5f;
+
+    [SerializeField]
+    private float verticalSpeed = 4f;
+
+    [Header("Layers")]
+    [SerializeField]
+    private LayerMask ladderLayer;
     
-    private bool isOnLadder => ladderCount > 0;
-    private bool isGrounded => groundCount > 0;
+    [SerializeField]
+    private LayerMask platformLayer;
+    
 
-    /// <summary>
-    /// Executes horizontal movement using Transform.Translate.
-    /// </summary>
-    public void RequestHorizontalMovement(float inputDirection)
+    // Current movement state
+    private MovementMode movementMode;
+
+    // Input values requested externally
+    private float horizontalInput;
+    private float verticalInput;
+
+    // =========================================================
+    // LADDER SYSTEM
+    // =========================================================
+
+    // All ladders currently touching the player
+    private HashSet<Collider> activeLadders =
+        new HashSet<Collider>();
+
+    
+    // Is player currently on a platform
+    private bool isOnPlatform = false;
+    
+    // Current ladder center used for snapping
+    private Vector3 ladderCenter;
+
+    // =========================================================
+    // UNITY
+    // =========================================================
+
+    private void Awake()
     {
-        if (isGrounded || isOnLadder)
-        {
-            Vector3 movement = Vector3.right * inputDirection * moveSpeed * Time.deltaTime;
-            transform.Translate(movement);
-        }
+        movementMode = MovementMode.Platform;
     }
 
-    /// <summary>
-    /// Executes vertical movement when on ladder using Transform.Translate.
-    /// </summary>
-    public void RequestVerticalMovement(float inputDirection)
+    private void Update()
     {
-        if (isOnLadder)
-        {
-            Vector3 movement = Vector3.up * inputDirection * climbSpeed * Time.deltaTime;
-            transform.Translate(movement);
-        }
+        ApplyMovement();
     }
 
-    private void OnTriggerEnter(Collider other)
+    // =========================================================
+    // EXTERNAL INPUT API
+    // =========================================================
+
+    public void RequestHorizontalMovement(float direction)
     {
-        if (((1 << other.gameObject.layer) & ladderLayer) != 0)
-        {
-            ladderCount++;
-            Debug.Log($"Entered ladder '{other.name}'. Count: {ladderCount}");
-        }
-        
-        if (((1 << other.gameObject.layer) & groundLayer) != 0)
-        {
-            groundCount++;
-            Debug.Log($"Entered ground '{other.name}'. Count: {groundCount}");
-        }
+        horizontalInput =
+            Mathf.Clamp(direction, -1f, 1f);
     }
 
-    private void OnTriggerExit(Collider other)
+    public void RequestVerticalMovement(float direction)
     {
-        if (((1 << other.gameObject.layer) & ladderLayer) != 0)
-        {
-            pendingLadderExits++;
-            Debug.Log($"Exited ladder '{other.name}'. Pending exits: {pendingLadderExits}");
-        }
-        
-        if (((1 << other.gameObject.layer) & groundLayer) != 0)
-        {
-            pendingGroundExits++;
-            Debug.Log($"Exited ground '{other.name}'. Pending exits: {pendingGroundExits}");
-        }
+        verticalInput =
+            Mathf.Clamp(direction, -1f, 1f);
     }
 
-    private void LateUpdate()
+    // =========================================================
+    // MOVEMENT
+    // =========================================================
+
+    private void ApplyMovement()
     {
-        // Process all pending exits at the end of the frame
-        if (pendingLadderExits > 0)
+        Vector3 move = Vector3.zero;
+
+        // -----------------------------------------------------
+        // PLATFORM MODE
+        // -----------------------------------------------------
+
+        if (movementMode == MovementMode.Platform)
         {
-            ladderCount -= pendingLadderExits;
-            ladderCount = Mathf.Max(0, ladderCount);
-            Debug.Log($"Processed {pendingLadderExits} ladder exits. New count: {ladderCount}");
-            pendingLadderExits = 0;
+            // Allow ONLY horizontal movement
+            move.x = horizontalInput * horizontalSpeed;
+
+            // Enter ladder mode
+            if (IsOnLadder() &&
+                Mathf.Abs(verticalInput) > 0.01f)
+            {
+                EnterLadderMode();
+            }
         }
 
-        if (pendingGroundExits > 0)
+        // -----------------------------------------------------
+        // LADDER MODE
+        // -----------------------------------------------------
+
+        else if (movementMode == MovementMode.Ladder)
         {
-            groundCount -= pendingGroundExits;
-            groundCount = Mathf.Max(0, groundCount);
-            Debug.Log($"Processed {pendingGroundExits} ground exits. New count: {groundCount}");
-            pendingGroundExits = 0;
+            // Safety check
+            if (!IsOnLadder())
+            {
+                ExitLadderMode();
+                return;
+            }
+
+            // Check for horizontal input and platform availability
+            if (Mathf.Abs(horizontalInput) > 0.01f && isOnPlatform)
+            {
+                ExitLadderMode();
+                // Apply horizontal movement immediately
+                move.x = horizontalInput * horizontalSpeed;
+            }
+            else
+            {
+                // Lock player to ladder center
+                Vector3 position = transform.position;
+                position.x = ladderCenter.x;
+                transform.position = position;
+
+                // Allow ONLY vertical movement
+                move.y = verticalInput * verticalSpeed;
+            }
         }
+
+        // Move character using transform
+        transform.position += move * Time.deltaTime;
+
+        // Optional:
+        // reset inputs after processing
+        horizontalInput = 0f;
+        verticalInput = 0f;
     }
 
+    // =========================================================
+    // LADDER HELPERS
+    // =========================================================
+
+    private bool IsOnLadder()
+    {
+    
+        return activeLadders.Count > 0;
+    }
+
+    private void EnterLadderMode()
+    {
+        movementMode = MovementMode.Ladder;
+
+        // Snap immediately to ladder
+        Vector3 position = transform.position;
+
+        position.x = ladderCenter.x;
+    
+
+        transform.position = position;
+        Debug.Log("Entered ladder mode");
+    }
+
+    private void ExitLadderMode()
+    {
+        Debug.Log("exit ladder mode");
+        movementMode = MovementMode.Platform;
+    }
+
+  // =========================================================
+        // TRIGGER DETECTOR CALLBACKS
+        // =========================================================
+
+        public void OnLadderTriggerEnter(Collider other)
+        {
+            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
+            {
+                activeLadders.Add(other);
+                ladderCenter = other.bounds.center;
+                Debug.Log("Ladder collider detected ladder!");
+            }
+        }
+
+        public void OnLadderTriggerStay(Collider other)
+        {
+            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
+            {
+                // Update ladder center
+                ladderCenter = other.bounds.center;
+            }
+        }
+    
+        public void OnLadderTriggerExit(Collider other)
+        {
+            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
+            {
+                activeLadders.Remove(other);
+                
+                // Still touching another ladder
+                if (IsOnLadder())
+                {
+                    foreach (Collider ladder in activeLadders)
+                    {
+                        ladderCenter = ladder.bounds.center;
+                        break;
+                    }
+                }
+                else
+                {
+                    ExitLadderMode();
+                }
+                Debug.Log("Ladder collider exited ladder!");
+            }
+        }
+    
+        public void OnPlatformTriggerEnter(Collider other)
+        {
+            if (IsInLayerMask(other.gameObject.layer, platformLayer))
+            {
+                isOnPlatform = true;
+                Debug.Log("Platform collider detected platform!");
+            }
+        }
+    
+        public void OnPlatformTriggerExit(Collider other)
+        {
+            if (IsInLayerMask(other.gameObject.layer, platformLayer))
+            {
+                isOnPlatform = false;
+                Debug.Log("Platform collider exited platform!");
+            }
+        }
+
+        // =========================================================
+        // LAYER CHECK
+        // =========================================================
+
+        private bool IsInLayerMask(int layer, LayerMask mask)
+        {
+            return (mask.value & (1 << layer)) != 0;
+        }
 }
