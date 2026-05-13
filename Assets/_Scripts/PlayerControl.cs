@@ -13,24 +13,34 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private LayerMask ladderLayer;
     [SerializeField] private LayerMask platformLayer;
 
+    [Header("Boundary Checking")]
+    [SerializeField] private float boundaryBuffer = 0.1f; // Small buffer to prevent edge clipping
     
     public Vector2 MovementInput { get; set; } = Vector2.zero;
     
     // Current state
     private MovementMode movementMode = MovementMode.Platform;
+    
     private bool isOnPlatform = false;
+    
     private HashSet<Collider> activeLadders = new HashSet<Collider>();
     private Vector3 ladderCenter;
-
+    
+    // Platform boundary tracking
+    private Collider currentPlatform;
+    private Bounds platformBounds;
+    
     // Optional: For player input only
     private InputSystemActions inputActions;
     
     public enum MovementMode { Platform, Ladder }
-    
+
+    private Collider playerCollider;
     
 
     private void Awake()
     {
+        playerCollider = GetComponentInChildren<Collider>(false);
         movementMode = MovementMode.Platform;
         InitializePlayerInput();
 
@@ -83,7 +93,8 @@ public class PlayerControl : MonoBehaviour
 
         if (movementMode == MovementMode.Platform)
         {
-            move.x = horizontalInput * horizontalSpeed;
+           
+                move.x = horizontalInput * horizontalSpeed;
 
             if (IsOnLadder() && Mathf.Abs(verticalInput) > 0.01f)
             {
@@ -112,9 +123,37 @@ public class PlayerControl : MonoBehaviour
             }
         }
 
-        transform.position += move * Time.deltaTime;
+        // Apply movement with boundary checking
+        Vector3 newPosition = transform.position + move * Time.deltaTime;
+    
+        // Clamp to platform boundaries if on platform
+        if (isOnPlatform && currentPlatform != null && movementMode == MovementMode.Platform)
+        {
+            newPosition = ClampToPlatformBounds(newPosition);
+        }
+    
+        transform.position = newPosition;
     }
     
+    
+    private Vector3 ClampToPlatformBounds(Vector3 targetPosition)
+    {
+        if (currentPlatform == null) return targetPosition;
+    
+        // Get player's collider bounds
+        
+        if (playerCollider == null) return targetPosition;
+    
+        // Calculate the effective boundaries considering player size
+        float playerHalfWidth = playerCollider.bounds.size.x * 0.5f;
+        float leftBound = platformBounds.min.x + playerHalfWidth + boundaryBuffer;
+        float rightBound = platformBounds.max.x - playerHalfWidth - boundaryBuffer;
+    
+        // Clamp horizontal position
+        targetPosition.x = Mathf.Clamp(targetPosition.x, leftBound, rightBound);
+    
+        return targetPosition;
+    }
     
     
 
@@ -195,6 +234,8 @@ public class PlayerControl : MonoBehaviour
         if (IsInLayerMask(other.gameObject.layer, platformLayer))
         {
             isOnPlatform = true;
+            currentPlatform = other;
+            platformBounds = other.bounds;
            
         }
     }
@@ -204,6 +245,10 @@ public class PlayerControl : MonoBehaviour
         if (IsInLayerMask(other.gameObject.layer, platformLayer))
         {
             isOnPlatform = false;
+            if (currentPlatform == other)
+            {
+                currentPlatform = null;
+            }
            
         }
     }
