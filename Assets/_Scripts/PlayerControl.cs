@@ -13,7 +13,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private LayerMask ladderLayer;
     [SerializeField] private LayerMask platformLayer;
 
-    // Input interface - can be controlled by player input OR AI
+    
     public Vector2 MovementInput { get; set; } = Vector2.zero;
     
     // Current state
