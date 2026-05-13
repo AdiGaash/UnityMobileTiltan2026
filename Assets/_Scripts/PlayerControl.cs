@@ -1,150 +1,122 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerControl : MonoBehaviour
 {
-    public enum MovementMode
-    {
-        Platform,
-        Ladder
-    }
-
     [Header("Movement")]
-    [SerializeField]
-    private float horizontalSpeed = 5f;
-
-    [SerializeField]
-    private float verticalSpeed = 4f;
-
+    [SerializeField] private float horizontalSpeed = 5f;
+    [SerializeField] private float verticalSpeed = 4f;
+    
     [Header("Layers")]
-    [SerializeField]
-    private LayerMask ladderLayer;
+    [SerializeField] private LayerMask ladderLayer;
+    [SerializeField] private LayerMask platformLayer;
+
+    // Input interface - can be controlled by player input OR AI
+    public Vector2 MovementInput { get; set; } = Vector2.zero;
     
-    [SerializeField]
-    private LayerMask platformLayer;
-    
-
-    // Current movement state
-    private MovementMode movementMode;
-
-    // Input values requested externally
-    private float horizontalInput;
-    private float verticalInput;
-
-    // =========================================================
-    // LADDER SYSTEM
-    // =========================================================
-
-    // All ladders currently touching the player
-    private HashSet<Collider> activeLadders =
-        new HashSet<Collider>();
-
-    
-    // Is player currently on a platform
+    // Current state
+    private MovementMode movementMode = MovementMode.Platform;
     private bool isOnPlatform = false;
-    
-    // Current ladder center used for snapping
+    private HashSet<Collider> activeLadders = new HashSet<Collider>();
     private Vector3 ladderCenter;
 
-    // =========================================================
-    // UNITY
-    // =========================================================
+    // Optional: For player input only
+    private InputSystemActions inputActions;
+    
+    public enum MovementMode { Platform, Ladder }
+    
+    
 
     private void Awake()
     {
         movementMode = MovementMode.Platform;
+        InitializePlayerInput();
+
+    }
+    
+    private void OnDestroy()
+    {
+        inputActions?.Dispose();
+    }
+
+    private void InitializePlayerInput()
+    {
+        inputActions = new InputSystemActions();
+        inputActions.Player.Move.performed += OnMoveInput;
+        inputActions.Player.Move.canceled += OnMoveInput;
+        inputActions.Enable();
+    }
+
+    private void OnMoveInput(InputAction.CallbackContext context)
+    {
+        MovementInput = context.ReadValue<Vector2>();
     }
 
     private void Update()
     {
         ApplyMovement();
     }
-
-    // =========================================================
-    // EXTERNAL INPUT API
-    // =========================================================
-
-    public void RequestHorizontalMovement(float direction)
+    
+    // Public API for external control (AI, etc.)
+    public void SetMovementInput(Vector2 input)
     {
-        horizontalInput =
-            Mathf.Clamp(direction, -1f, 1f);
+        MovementInput = input;
     }
 
-    public void RequestVerticalMovement(float direction)
+    public void SetHorizontalInput(float input)
     {
-        verticalInput =
-            Mathf.Clamp(direction, -1f, 1f);
+        MovementInput = new Vector2(input, MovementInput.y);
     }
 
-    // =========================================================
-    // MOVEMENT
-    // =========================================================
+    public void SetVerticalInput(float input)
+    {
+        MovementInput = new Vector2(MovementInput.x, input);
+    }
 
     private void ApplyMovement()
     {
         Vector3 move = Vector3.zero;
-
-        // -----------------------------------------------------
-        // PLATFORM MODE
-        // -----------------------------------------------------
+        float horizontalInput = Mathf.Clamp(MovementInput.x, -1f, 1f);
+        float verticalInput = Mathf.Clamp(MovementInput.y, -1f, 1f);
 
         if (movementMode == MovementMode.Platform)
         {
-            // Allow ONLY horizontal movement
             move.x = horizontalInput * horizontalSpeed;
 
-            // Enter ladder mode
-            if (IsOnLadder() &&
-                Mathf.Abs(verticalInput) > 0.01f)
+            if (IsOnLadder() && Mathf.Abs(verticalInput) > 0.01f)
             {
                 EnterLadderMode();
             }
         }
-
-        // -----------------------------------------------------
-        // LADDER MODE
-        // -----------------------------------------------------
-
         else if (movementMode == MovementMode.Ladder)
         {
-            // Safety check
             if (!IsOnLadder())
             {
                 ExitLadderMode();
                 return;
             }
 
-            // Check for horizontal input and platform availability
             if (Mathf.Abs(horizontalInput) > 0.01f && isOnPlatform)
             {
                 ExitLadderMode();
-                // Apply horizontal movement immediately
                 move.x = horizontalInput * horizontalSpeed;
             }
             else
             {
-                // Lock player to ladder center
                 Vector3 position = transform.position;
                 position.x = ladderCenter.x;
                 transform.position = position;
-
-                // Allow ONLY vertical movement
                 move.y = verticalInput * verticalSpeed;
             }
         }
 
-        // Move character using transform
         transform.position += move * Time.deltaTime;
-
-        // Optional:
-        // reset inputs after processing
-        horizontalInput = 0f;
-        verticalInput = 0f;
     }
-
-    // =========================================================
-    // LADDER HELPERS
-    // =========================================================
+    
+    
+    
 
     private bool IsOnLadder()
     {
@@ -172,76 +144,77 @@ public class PlayerControl : MonoBehaviour
         movementMode = MovementMode.Platform;
     }
 
-  // =========================================================
-        // TRIGGER DETECTOR CALLBACKS
-        // =========================================================
+    // =========================================================
+    // TRIGGER DETECTOR CALLBACKS
+    // =========================================================
 
-        public void OnLadderTriggerEnter(Collider other)
+    public void OnLadderTriggerEnter(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject.layer, ladderLayer))
         {
-            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
-            {
-                activeLadders.Add(other);
-                ladderCenter = other.bounds.center;
-                Debug.Log("Ladder collider detected ladder!");
-            }
+            activeLadders.Add(other);
+            ladderCenter = other.bounds.center;
+            
         }
+    }
 
-        public void OnLadderTriggerStay(Collider other)
+    public void OnLadderTriggerStay(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject.layer, ladderLayer))
         {
-            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
-            {
-                // Update ladder center
-                ladderCenter = other.bounds.center;
-            }
+            // Update ladder center
+            ladderCenter = other.bounds.center;
         }
-    
-        public void OnLadderTriggerExit(Collider other)
+    }
+
+    public void OnLadderTriggerExit(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject.layer, ladderLayer))
         {
-            if (IsInLayerMask(other.gameObject.layer, ladderLayer))
+            activeLadders.Remove(other);
+            
+            // Still touching another ladder
+            if (IsOnLadder())
             {
-                activeLadders.Remove(other);
-                
-                // Still touching another ladder
-                if (IsOnLadder())
+                foreach (Collider ladder in activeLadders)
                 {
-                    foreach (Collider ladder in activeLadders)
-                    {
-                        ladderCenter = ladder.bounds.center;
-                        break;
-                    }
+                    ladderCenter = ladder.bounds.center;
+                    break;
                 }
-                else
-                {
-                    ExitLadderMode();
-                }
-                Debug.Log("Ladder collider exited ladder!");
             }
-        }
-    
-        public void OnPlatformTriggerEnter(Collider other)
-        {
-            if (IsInLayerMask(other.gameObject.layer, platformLayer))
+            else
             {
-                isOnPlatform = true;
-                Debug.Log("Platform collider detected platform!");
+                ExitLadderMode();
             }
+            
         }
+    }
+
+    public void OnPlatformTriggerEnter(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject.layer, platformLayer))
+        {
+            isOnPlatform = true;
+           
+        }
+    }
+
+    public void OnPlatformTriggerExit(Collider other)
+    {
+        if (IsInLayerMask(other.gameObject.layer, platformLayer))
+        {
+            isOnPlatform = false;
+           
+        }
+    }
+
+    // =========================================================
+    // LAYER CHECK
+    // =========================================================
+
+    private bool IsInLayerMask(int layer, LayerMask mask)
+    {
+        return (mask.value & (1 << layer)) != 0;
+    }
     
-        public void OnPlatformTriggerExit(Collider other)
-        {
-            if (IsInLayerMask(other.gameObject.layer, platformLayer))
-            {
-                isOnPlatform = false;
-                Debug.Log("Platform collider exited platform!");
-            }
-        }
-
-        // =========================================================
-        // LAYER CHECK
-        // =========================================================
-
-        private bool IsInLayerMask(int layer, LayerMask mask)
-        {
-            return (mask.value & (1 << layer)) != 0;
-        }
 }
