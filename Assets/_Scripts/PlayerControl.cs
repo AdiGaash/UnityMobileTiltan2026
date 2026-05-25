@@ -28,7 +28,7 @@ public class PlayerControl : MonoBehaviour
     private Collider currentPlatform;
     private Bounds platformBounds;
 
-    // Optional: For player input only
+    
     private InputSystemActions inputActions;
     
 
