@@ -1061,6 +1061,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: WoodPlankFull
       objectReference: {fileID: 0}
+    - target: {fileID: 8053054166718096589, guid: fa7de9579b9eb8347b77386f79a63f96, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8053054166718096589, guid: fa7de9579b9eb8347b77386f79a63f96, type: 3}
+      propertyPath: m_TagString
+      value: Platform
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
