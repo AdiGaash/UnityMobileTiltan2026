@@ -8,8 +8,7 @@ public class PlayerControl : MonoBehaviour
     [Header("Movement")] [SerializeField] private float horizontalSpeed = 5f;
     [SerializeField] private float verticalSpeed = 4f;
 
-   
-
+    
     [Header("Boundary Checking")] [SerializeField]
     private float boundaryBuffer = 0.1f; // Small buffer to prevent edge clipping
 
@@ -117,7 +116,7 @@ public class PlayerControl : MonoBehaviour
         Vector3 newPosition = transform.position + move * Time.deltaTime;
 
         // Clamp to platform boundaries if on platform
-        if (isOnPlatform && currentPlatform != null && movementMode == MovementMode.Platform)
+        if (currentPlatform != null && movementMode == MovementMode.Platform)
         {
             newPosition = ClampToPlatformBounds(newPosition);
         }
@@ -128,10 +127,7 @@ public class PlayerControl : MonoBehaviour
 
     private Vector3 ClampToPlatformBounds(Vector3 targetPosition)
     {
-        if (currentPlatform == null) return targetPosition;
-
-        // Get player's collider bounds
-
+       
         if (playerCollider == null) return targetPosition;
 
         // Calculate the effective boundaries considering player size
