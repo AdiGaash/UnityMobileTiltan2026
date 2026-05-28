@@ -17,6 +17,8 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
 
     protected override void SpawnNewSegment()
     {
+        
+        
         GameObject newSeg = TaggedObjectPooler.Instance.GetPooledObject("Platfroms"); // Get a segment from the pool.
 
         if (newSeg != null)
