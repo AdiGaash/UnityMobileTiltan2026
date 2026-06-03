@@ -1,5 +1,4 @@
-﻿// File: Assets/_Scripts/Collectibles/PowerUpCollectible.cs
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PowerUpCollectible : MonoBehaviour, ICollectible
 {
