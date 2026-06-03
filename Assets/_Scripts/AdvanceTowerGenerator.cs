@@ -1,5 +1,4 @@
-﻿using _Scripts;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class AdvanceTowerGenerator : TowerGeneratorBase
 {

@@ -2,8 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace _Scripts
-{
+
     [CreateAssetMenu(fileName = "TowerParametersManager", menuName = "GameSO/TowerParametersManager", order = 1)]
     public class TowerParametersManager : ScriptableObject
     {
@@ -113,4 +112,3 @@ namespace _Scripts
             return Mathf.Max(0, CurrentDifficultyLevel.segmentsRequired - segmentsGenerated);
         }
     }
-}
