@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
 {
@@ -9,6 +11,7 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
         public string tag;  // The tag to identify the pool.
         public GameObject prefab;  // The prefab to pool.
         public int initialPoolSize = 10;  // Initial number of objects in the pool.
+        public bool canExtend = true;  // Whether the pool can extend dynamically.
     }
 
     public List<Pool> pools;  // A list of different pools.
@@ -55,21 +58,42 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
     
         // If no objects are available, instantiate a new one.
         Pool pool = pools.Find(p => p.tag == tag);
-        if (pool != null)
+        if (pool != null && pool.canExtend)
         {
             GameObject newObj = Instantiate(pool.prefab);
             return newObj;
         }
 
-        Debug.LogWarning($"No pool found for tag: {tag}");
+        Debug.LogWarning($"No pool or available object found for tag: {tag}");
         return null;
     }
 
+    
+ 
+    public GameObject GetPooledObjectWithAutoReturn(string tag)
+    {
+        GameObject obj = GetPooledObject(tag);
+        
+        if (obj != null)
+        {
+            var poolableComponent = obj.GetComponent<IPoolableObject>();
+            if (poolableComponent != null)
+            {
+                // Set up auto-return action
+                poolableComponent.SetReturnAction(() => ReturnObject(obj,tag));
+            }
+        }
+        
+        return obj;
+    }
+    
+    
     public void ReturnObject(GameObject obj, string tag)
     {
         if (obj != null && pooledObjects.ContainsKey(tag))
         {
             obj.SetActive(false);  // Deactivate the object when returned to pool.
+            obj.transform.parent = null; // Detach from any parent to avoid unintended transformations.
             pooledObjects[tag].Enqueue(obj);
         }
     }

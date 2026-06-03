@@ -182,13 +182,23 @@ public class PlayerControl : MonoBehaviour
         {
             ladderCenter = other.bounds.center;
             EnterLadderMode();
+            return;
         }
-        else if (other.gameObject.CompareTag("Platform"))
+        if (other.gameObject.CompareTag("Platform"))
         {
             isOnPlatform = true;
             currentPlatform = other;
             platformBounds = other.bounds;
+            return;
         }
+         
+        other.TryGetComponent(out ICollectible collectible);
+        if (collectible != null)
+        {
+            collectible.OnCollected();
+        }
+        
+        
 
     }
 
