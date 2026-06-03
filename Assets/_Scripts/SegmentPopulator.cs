@@ -31,7 +31,7 @@ public class SegmentPopulator : MonoBehaviour
             if (laddersSlots[i])
             {
                 Transform positionTransform = face.GetChild(i);
-                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject(i < 3 ? "LaddersBottom" : "LaddersUpper");
+                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("Ladders");
 
                 subObject.transform.parent = positionTransform;
                 subObject.transform.localPosition = Vector3.zero; // Reset local position to align with the parent
