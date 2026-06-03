@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 
 public class PlaySoundEffectPool : MonoBehaviour, IPoolableObject
 {
     AudioSource audioSource;
     
-    private Action returnAction;
+    private UnityAction returnAction;
     
     private void Awake()
     {
@@ -74,7 +75,7 @@ public class PlaySoundEffectPool : MonoBehaviour, IPoolableObject
         Debug.Log("trigger return to pool");
     }
 
-    public void SetReturnAction(Action action)
+    public void SetReturnAction(UnityAction action)
     {
         returnAction = action;
     }
