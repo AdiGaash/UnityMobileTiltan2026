@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "TowerParameters", menuName = "GameSO", order = 0)]
+[CreateAssetMenu(fileName = "TowerParameters", menuName = "GameSO/TowerParameters", order = 0)]
 public class TowerParameters : ScriptableObject
 {
     public int MinLadders = 1;
