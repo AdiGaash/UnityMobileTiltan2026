@@ -8,11 +8,22 @@ public class ScoreCollectible : MonoBehaviour, ICollectible
     public void OnCollected()
     {
         // Add score
-        
-        
-        // Optional: Spawn effect
-        
+        GameManager.Instance.AddScore(scoreValue);
+
+
+        AnimateCollectedCoin();
         // Optional: Play sound
+        PlaySound();
+
+    }
+
+
+    void AnimateCollectedCoin()
+    {
+        // Implement coin animation logic here
+    }
+    void PlaySound()
+    {
         if (SFX != null)
         {
             GameObject sFXPlayer = TaggedObjectPooler.Instance.GetPooledObjectWithAutoReturn("SoundFX");
@@ -27,8 +38,6 @@ public class ScoreCollectible : MonoBehaviour, ICollectible
 
             }
         }
-
     }
-
   
 }

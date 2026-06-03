@@ -7,24 +7,24 @@ public class GameManager : Singleton<GameManager>
 {
     // Add any public or private fields for managing game state here
 
-    /// <summary>
-    /// Called when the script instance is being loaded.
-    /// Initializes any starting conditions of the game.
-    /// </summary>
+    public IntVariable score;
+    public void AddScore(int scoreToAdd)
+    {
+        score.Value += scoreToAdd;
+    }
+
     protected override void Awake()
     {
         base.Awake();
-        // Initialize game settings, load levels, etc.
+        InitGame();
     }
 
-    /// <summary>
-    /// Update method called once per frame.
-    /// Handles ongoing game logic updates.
-    /// </summary>
-    private void Update()
+    public void InitGame()
     {
-        // Handle frame-based game logic
+        score.Value = 0;
     }
+    
+    
 
     // Add any additional methods for managing game state here
 }
