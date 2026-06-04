@@ -58,6 +58,8 @@ public class ScoreCollectible : MonoBehaviour, ICollectible, IPoolableObject
         if (SFX != null)
         {
             GameObject sFXPlayer = TaggedObjectPooler.Instance.GetPooledObjectWithAutoReturn("SoundFX");
+            sFXPlayer.transform.parent = transform; // Parent to the coin so it moves with it
+            
             PlaySoundEffectPool sfxPool = sFXPlayer.GetComponent<PlaySoundEffectPool>();
             if (sfxPool != null)
             {
