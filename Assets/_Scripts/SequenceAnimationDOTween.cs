@@ -24,5 +24,6 @@ public class SequenceAnimationDOTween : MonoBehaviour
 
         // Start the sequence
         sequence.Play();
+        
     }
 }
