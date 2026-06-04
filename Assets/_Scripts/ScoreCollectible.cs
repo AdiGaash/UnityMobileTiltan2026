@@ -1,12 +1,34 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+using DG.Tweening;
 
-public class ScoreCollectible : MonoBehaviour, ICollectible
+public class ScoreCollectible : MonoBehaviour, ICollectible, IPoolableObject
 {
     public int scoreValue = 10;
     public AudioClip SFX;
+    private UnityAction returnAction;
+    
+
+    private void Awake()
+    {
+        // find target UI place to move to
+    }
+
+    private void OnEnable()
+    {
+        GetComponent<Collider>().enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        GetComponent<Collider>().enabled = false;
+        transform.parent = null; // Detach from any parent when disabled
+    }
 
     public void OnCollected()
     {
+        GetComponent<Collider>().enabled = false; // Disable collider to prevent multiple collections
         // Add score
         GameManager.Instance.AddScore(scoreValue);
 
@@ -21,6 +43,15 @@ public class ScoreCollectible : MonoBehaviour, ICollectible
     void AnimateCollectedCoin()
     {
         // Implement coin animation logic here
+        // get sound clip length
+        var length = SFX.length;
+        Vector3 targetPosition = GameObject.FindGameObjectWithTag("ScoreUI").transform.position;
+        transform.DOMove(targetPosition, length).SetEase(Ease.InQuad).OnComplete(() =>
+        {
+            // Return to pool after animation completes
+            TriggerReturn();
+        });
+        
     }
     void PlaySound()
     {
@@ -39,5 +70,15 @@ public class ScoreCollectible : MonoBehaviour, ICollectible
             }
         }
     }
-  
+
+    public void TriggerReturn()
+    {
+        returnAction?.Invoke();
+        Debug.Log("trigger return to pool");
+    }
+
+    public void SetReturnAction(UnityAction action)
+    {
+        returnAction = action;
+    }
 }
