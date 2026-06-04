@@ -20,4 +20,10 @@ public class WebCamBasic : MonoBehaviour
                 webCamTexture.Play();   
             }
         }
+
+
+        private void OnDisable()
+        {
+            webCamTexture?.Stop();
+        }
     }
