@@ -10,7 +10,7 @@ public abstract class TowerGeneratorBase : MonoBehaviour
     protected List<GameObject> activeSegments = new List<GameObject>();
     protected float nextSpawnY;
 
-    private void Start()
+    protected virtual void Start()
     {
         // 1. Calculate the start position to be below the player/camera
         // This ensures the player is already standing on a tower segment at start.
@@ -43,4 +43,9 @@ public abstract class TowerGeneratorBase : MonoBehaviour
     }
     protected abstract void ReturnSegment();
     protected abstract void SpawnNewSegment();
+
+    protected virtual void OnDestroy()
+    {
+        throw new System.NotImplementedException();
+    }
 }

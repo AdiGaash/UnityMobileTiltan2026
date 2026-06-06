@@ -12,6 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42bf0c4d2d3f43b98602fa74e45e54c6, type: 3}
   m_Name: TowerParametersHard
   m_EditorClassIdentifier: Assembly-CSharp::_Scripts.TowerParameters
+  SegMaterial: {fileID: 2100000, guid: 378426c27b3a38f4f9e38126b22973fc, type: 2}
   MinLadders: 1
   MaxLadders: 2
-  SegMaterial: {fileID: 2100000, guid: 378426c27b3a38f4f9e38126b22973fc, type: 2}
+  Collectables:
+  - CollectablePrefab: {fileID: 5920538679560974484, guid: 22f5966806315be4a8a7cace554f1e7c, type: 3}
+    SpawnChance: 0.2
+  - CollectablePrefab: {fileID: 4353608287330971190, guid: 4c98b0d0281250e49a7bb3edd2e372c5, type: 3}
+    SpawnChance: 0.1
+  - CollectablePrefab: {fileID: 1153519787077424188, guid: 4c188979b726cc2438f2d0f96a321110, type: 3}
+    SpawnChance: 0.1

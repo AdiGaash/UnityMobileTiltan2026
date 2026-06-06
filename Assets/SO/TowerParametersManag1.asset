@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20cafae7ce434ac0b6c5564f6441d426, type: 3}
-  m_Name: TowerParametersManager
+  m_Name: TowerParametersManag1
   m_EditorClassIdentifier: Assembly-CSharp::TowerParametersManager
   difficultyLevels:
   - difficultyName: Level 1
@@ -19,8 +19,5 @@ MonoBehaviour:
   - difficultyName: Level 2
     segmentsRequired: 30
     towerParameters: {fileID: 11400000, guid: 67cf6505b4316a1438af1076457ff646, type: 2}
-  - difficultyName: Level 3
-    segmentsRequired: 40
-    towerParameters: {fileID: 11400000, guid: 67cf6505b4316a1438af1076457ff646, type: 2}
-  currentLevelIndex: 1
+  currentLevelIndex: 0
   segmentsGenerated: 0

@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94625fac9a9f4067bc62d6a0baaa8d38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  score: {fileID: 11400000, guid: bceac237d8b69ea47a95404a3a4ce131, type: 2}
 --- !u!4 &3727045
 Transform:
   m_ObjectHideFlags: 0
@@ -415,9 +416,11 @@ MonoBehaviour:
   - tag: Platfroms
     prefab: {fileID: 8124196946227854450, guid: e0dcc32a2c69c62459f26a1b07549dca, type: 3}
     initialPoolSize: 10
+    canExtend: 1
   - tag: Ladders
     prefab: {fileID: 7624272258782588007, guid: 044fccedcfe9dd74da4bcc3505ee14e4, type: 3}
     initialPoolSize: 60
+    canExtend: 1
 --- !u!114 &322951580
 MonoBehaviour:
   m_ObjectHideFlags: 0

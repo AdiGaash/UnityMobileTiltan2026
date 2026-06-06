@@ -14,6 +14,91 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
     // Event for when difficulty changes
     public System.Action<string> OnDifficultyChanged;
 
+    
+        protected override void Start()
+        {
+            base.Start();
+            // Subscribe to our own difficulty changed event to ensure collectibles are pooled
+            OnDifficultyChanged += EnsureCollectiblesInPool;
+            
+            // Ensure initial collectibles are in pool
+            EnsureCollectiblesInPool(GetCurrentDifficultyName());
+        }
+
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            // Unsubscribe to prevent memory leaks
+            if (OnDifficultyChanged != null)
+                OnDifficultyChanged -= EnsureCollectiblesInPool;
+        }
+
+        /// <summary>
+        /// Ensures all collectible prefabs from the current difficulty are available in the object pool
+        /// </summary>
+        /// <param name="difficultyName">The name of the difficulty level (for logging purposes)</param>
+        private void EnsureCollectiblesInPool(string difficultyName)
+        {
+            var currentParams = GetCurrentTowerParameters();
+            if (currentParams?.Collectables == null || currentParams.Collectables.Length == 0)
+            {
+                Debug.Log($"No collectibles defined for difficulty: {difficultyName}");
+                return;
+            }
+
+            Debug.Log($"Ensuring collectibles are available in pool for difficulty: {difficultyName}");
+
+            foreach (var collectableParam in currentParams.Collectables)
+            {
+                if (collectableParam.CollectablePrefab != null)
+                {
+                    EnsurePrefabInPool(collectableParam.CollectablePrefab);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ensures a specific collectible prefab is available in the TaggedObjectPooler
+        /// </summary>
+        /// <param name="prefab">The collectible prefab to ensure is in the pool</param>
+        private void EnsurePrefabInPool(GameObject prefab)
+        {
+            string poolTag = prefab.name;
+            
+            // Check if a pool with this tag already exists
+            bool poolExists = TaggedObjectPooler.Instance.pools.Exists(p => p.tag == poolTag);
+            
+            if (!poolExists)
+            {
+                // Create a new pool for this collectible type
+                var newPool = new TaggedObjectPooler.Pool
+                {
+                    tag = poolTag,
+                    prefab = prefab,
+                    initialPoolSize = 5, // Reasonable initial size
+                    canExtend = true
+                };
+                
+                TaggedObjectPooler.Instance.pools.Add(newPool);
+                
+                // Initialize the pool manually since Awake has already been called
+                TaggedObjectPooler.Instance.InitializePool(newPool);
+                
+                Debug.Log($"Created new pool for collectible: {prefab.name} with tag: {poolTag}");
+            }
+            else
+            {
+                // Pool exists, check if it has the correct prefab
+                var existingPool = TaggedObjectPooler.Instance.pools.Find(p => p.tag == poolTag);
+                if (existingPool.prefab != prefab)
+                {
+                    Debug.LogWarning($"Pool with tag {poolTag} exists but has different prefab. Expected: {prefab.name}, Found: {existingPool.prefab.name}");
+                }
+            }
+        }
+
+    
+      
     protected override void SpawnNewSegment()
     {
         
@@ -38,8 +123,18 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
             SegmentPopulator populator = newSeg.GetComponent<SegmentPopulator>();
             if (populator != null)
             {
-                populator.AttachLaddersToFace(0, ChoosenLadders());
+                var chosenLadders = ChoosenLadders();
+                populator.AttachLaddersToFace(0, chosenLadders);
+                    
+                // Spawn collectibles on top of ladders based on current tower parameters
+                if (currentParams?.Collectables != null && currentParams.Collectables.Length > 0)
+                {
+                    populator.SpawnCollectiblesOnLadders(0, chosenLadders, currentParams.Collectables);
+                }
             }
+            
+            
+            
             
             // Check for difficulty progression
             if (parametersManager != null && parametersManager.OnSegmentGenerated())

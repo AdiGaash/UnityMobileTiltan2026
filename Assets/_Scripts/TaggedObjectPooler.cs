@@ -96,5 +96,36 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
             obj.transform.parent = null; // Detach from any parent to avoid unintended transformations.
             pooledObjects[tag].Enqueue(obj);
         }
+        else
+        {
+            Debug.Log($"Attempted to return object with tag '{tag}' that does not belong to any pool or is null.");
+        }
+    }
+    
+    
+    public void InitializePool(Pool pool)
+    {
+        if (pooledObjects.ContainsKey(pool.tag))
+        {
+            Debug.LogWarning($"Pool with tag '{pool.tag}' already exists!");
+            return;
+        }
+
+        pooledObjects[pool.tag] = new Queue<GameObject>();
+
+        for (int i = 0; i < pool.initialPoolSize; i++)
+        {
+            GameObject obj = Instantiate(pool.prefab);
+            obj.SetActive(false);
+            pooledObjects[pool.tag].Enqueue(obj);
+        }
+
+        Debug.Log($"Initialized pool '{pool.tag}' with {pool.initialPoolSize} objects");
+    }
+
+  
+    public bool HasPool(string tag)
+    {
+        return pooledObjects.ContainsKey(tag);
     }
 }
