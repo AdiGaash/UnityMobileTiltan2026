@@ -421,6 +421,10 @@ MonoBehaviour:
     prefab: {fileID: 7624272258782588007, guid: 044fccedcfe9dd74da4bcc3505ee14e4, type: 3}
     initialPoolSize: 60
     canExtend: 1
+  - tag: SoundFX
+    prefab: {fileID: 3704447427058447439, guid: 311f9f968d36c9040a746cf75badb4d6, type: 3}
+    initialPoolSize: 20
+    canExtend: 0
 --- !u!114 &322951580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,7 +571,7 @@ GameObject:
   - component: {fileID: 529419287}
   m_Layer: 5
   m_Name: ScoreUI
-  m_TagString: Untagged
+  m_TagString: ScoreUI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

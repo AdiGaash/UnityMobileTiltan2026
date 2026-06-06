@@ -16,7 +16,7 @@ public class SegmentPopulator : MonoBehaviour
             for (int i = 0; i < face.childCount-1; i++) // Assuming six positions per face
             {
                 Transform positionTransform = face.GetChild(i);
-                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("ladders"); // Get a sub-object from the pool
+                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("StairsShort"); // Get a sub-object from the pool
                 subObject.transform.parent = positionTransform;
                 subObject.transform.localPosition = Vector3.zero; // Reset local position to align with the parent
             }
@@ -32,7 +32,7 @@ public class SegmentPopulator : MonoBehaviour
             if (laddersSlots[i])
             {
                 Transform positionTransform = face.GetChild(i);
-                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("Ladders");
+                GameObject subObject = TaggedObjectPooler.Instance.GetPooledObject("StairsShort");
 
                 subObject.transform.parent = positionTransform;
                 subObject.transform.localPosition = Vector3.zero; // Reset local position to align with the parent
@@ -111,7 +111,8 @@ public class SegmentPopulator : MonoBehaviour
                     for (int j = positionTransform.childCount - 1; j >= 0; j--)
                     {
                         GameObject childObject = positionTransform.GetChild(j).gameObject;
-                        TaggedObjectPooler.Instance.ReturnObject(childObject, childObject.tag);
+                        string childName = childObject.name.Replace("(Clone)", "").Trim(); // Get the base name of the child object
+                        TaggedObjectPooler.Instance.ReturnObject(childObject, childName);
                     }
                 }
             }

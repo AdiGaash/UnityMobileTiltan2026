@@ -23,7 +23,7 @@ public class ScoreCollectible : MonoBehaviour, ICollectible, IPoolableObject
     private void OnDisable()
     {
         GetComponent<Collider>().enabled = false;
-        transform.parent = null; // Detach from any parent when disabled
+       
     }
 
     public void OnCollected()

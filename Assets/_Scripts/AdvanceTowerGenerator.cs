@@ -14,6 +14,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
     // Event for when difficulty changes
     public System.Action<string> OnDifficultyChanged;
 
+    private bool DidEnsureCollectiblesInPool = false;
     
         protected override void Start()
         {
@@ -39,6 +40,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
         /// <param name="difficultyName">The name of the difficulty level (for logging purposes)</param>
         private void EnsureCollectiblesInPool(string difficultyName)
         {
+            DidEnsureCollectiblesInPool = true;
             var currentParams = GetCurrentTowerParameters();
             if (currentParams?.Collectables == null || currentParams.Collectables.Length == 0)
             {
@@ -71,14 +73,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
             if (!poolExists)
             {
                 // Create a new pool for this collectible type
-                var newPool = new TaggedObjectPooler.Pool
-                {
-                    tag = poolTag,
-                    prefab = prefab,
-                    initialPoolSize = 5, // Reasonable initial size
-                    canExtend = true
-                };
-                
+                var newPool = new TaggedObjectPooler.Pool(prefab, 5, true);
                 TaggedObjectPooler.Instance.pools.Add(newPool);
                 
                 // Initialize the pool manually since Awake has already been called
@@ -103,7 +98,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
     {
         
         
-        GameObject newSeg = TaggedObjectPooler.Instance.GetPooledObject("Platfroms"); // Get a segment from the pool.
+        GameObject newSeg = TaggedObjectPooler.Instance.GetPooledObject("WoodenBaseClear"); // Get a segment from the pool.
 
         if (newSeg != null)
         {
@@ -127,7 +122,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
                 populator.AttachLaddersToFace(0, chosenLadders);
                     
                 // Spawn collectibles on top of ladders based on current tower parameters
-                if (currentParams?.Collectables != null && currentParams.Collectables.Length > 0)
+                if (currentParams?.Collectables != null && currentParams.Collectables.Length > 0 && DidEnsureCollectiblesInPool)
                 {
                     populator.SpawnCollectiblesOnLadders(0, chosenLadders, currentParams.Collectables);
                 }
@@ -205,7 +200,7 @@ public class AdvanceTowerGenerator : TowerGeneratorBase
             }
     
             activeSegments.RemoveAt(0);
-            TaggedObjectPooler.Instance.ReturnObject(oldSeg,"Platfroms");  // Return the segment to the pool.
+            TaggedObjectPooler.Instance.ReturnObject(oldSeg,"WoodenBaseClear");  // Return the segment to the pool.
         }
     }
     

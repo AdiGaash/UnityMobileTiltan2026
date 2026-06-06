@@ -8,10 +8,18 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
     [System.Serializable]
     public class Pool
     {
-        public string tag;  // The tag to identify the pool.
+        public readonly string tag;  // The tag to identify the pool.
         public GameObject prefab;  // The prefab to pool.
         public int initialPoolSize = 10;  // Initial number of objects in the pool.
         public bool canExtend = true;  // Whether the pool can extend dynamically.
+
+        public Pool(GameObject prefab, int initialPoolSize, bool canExtend)
+        {
+            tag = prefab.name;
+            this.prefab = prefab;
+            this.initialPoolSize = initialPoolSize;
+            this.canExtend = canExtend;
+        }
     }
 
     public List<Pool> pools;  // A list of different pools.
@@ -36,34 +44,42 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
 
         foreach (Pool pool in pools)
         {
-            pooledObjects[pool.tag] = new Queue<GameObject>();
+            pooledObjects[pool.prefab.name] = new Queue<GameObject>();
 
             for (int i = 0; i < pool.initialPoolSize; i++)
             {
                 GameObject obj = Instantiate(pool.prefab);
                 obj.SetActive(false);  // Deactivate initially to save resources.
-                pooledObjects[pool.tag].Enqueue(obj);
+                pooledObjects[pool.prefab.name].Enqueue(obj);
             }
+            
         }
     }
 
     public GameObject GetPooledObject(string tag)
     {
-        if (pooledObjects.ContainsKey(tag) && pooledObjects[tag].Count > 0)
+        if (HasPool(tag))
         {
-            GameObject obj = pooledObjects[tag].Dequeue();
-            obj.SetActive(true);  // Activate the object when retrieved.
-            return obj;
-        }
+            if (pooledObjects[tag].Count > 0)
+            {
+                GameObject obj = pooledObjects[tag].Dequeue();
+                obj.SetActive(true);  // Activate the object when retrieved.
+                return obj;
+            }
+            else
+            {
+                Pool pool = pools.Find(p => p.tag == tag);
+                if (pool != null && pool.canExtend)
+                {
+                    GameObject newObj = Instantiate(pool.prefab);
+                    return newObj;
+                }
+            }
+        } 
+        
     
-        // If no objects are available, instantiate a new one.
-        Pool pool = pools.Find(p => p.tag == tag);
-        if (pool != null && pool.canExtend)
-        {
-            GameObject newObj = Instantiate(pool.prefab);
-            return newObj;
-        }
-
+       
+        
         Debug.LogWarning($"No pool or available object found for tag: {tag}");
         return null;
     }
@@ -92,9 +108,9 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
     {
         if (obj != null && pooledObjects.ContainsKey(tag))
         {
-            obj.SetActive(false);  // Deactivate the object when returned to pool.
-            obj.transform.parent = null; // Detach from any parent to avoid unintended transformations.
             pooledObjects[tag].Enqueue(obj);
+            transform.parent = null; // Detach from any parent when disabled
+            obj.SetActive(false);  // Deactivate the object when returned to pool.
         }
         else
         {
@@ -111,7 +127,7 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
             return;
         }
 
-        pooledObjects[pool.tag] = new Queue<GameObject>();
+        pooledObjects[pool.prefab.name] = new Queue<GameObject>();
 
         for (int i = 0; i < pool.initialPoolSize; i++)
         {

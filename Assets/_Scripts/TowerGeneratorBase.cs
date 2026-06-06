@@ -33,7 +33,6 @@ public abstract class TowerGeneratorBase : MonoBehaviour
         }
 
         // 4. Clean up segments that are now far below the camera
-        // We use 'drawDistance * 1.5' to ensure they don't pop out of view too early.
         float removalThreshold = cameraTransform.position.y - (drawDistance * segmentHeight);
         
         if (activeSegments.Count > 0 && activeSegments[0].transform.position.y < removalThreshold)
@@ -46,6 +45,6 @@ public abstract class TowerGeneratorBase : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        throw new System.NotImplementedException();
+        
     }
 }
