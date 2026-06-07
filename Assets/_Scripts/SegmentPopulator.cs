@@ -86,7 +86,7 @@ public class SegmentPopulator : MonoBehaviour
         {
             collectible.transform.parent = ladderPosition;
             // Position the collectible slightly above the ladder
-            collectible.transform.localPosition = new Vector3(0, 0.2f, -0.2f); // Adjust Y offset as needed
+            collectible.transform.localPosition = new Vector3(0, 0.2f, -0.1f); // Adjust Y offset as needed
         }
     }
 

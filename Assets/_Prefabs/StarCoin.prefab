@@ -101,7 +101,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreCollectible
   scoreValue: 10
-  SFX: {fileID: 0}
+  SFX: {fileID: 8300000, guid: 2c5292ba5cf254919a6b9e2b18e04f49, type: 3}
 --- !u!65 &-4186232710538131836
 BoxCollider:
   m_ObjectHideFlags: 0

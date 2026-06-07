@@ -66,19 +66,14 @@ public class TaggedObjectPooler : Singleton<TaggedObjectPooler>
                 obj.SetActive(true);  // Activate the object when retrieved.
                 return obj;
             }
-            else
+            
+            Pool pool = pools.Find(p => p.tag == tag);
+            if (pool != null && pool.canExtend)
             {
-                Pool pool = pools.Find(p => p.tag == tag);
-                if (pool != null && pool.canExtend)
-                {
-                    GameObject newObj = Instantiate(pool.prefab);
-                    return newObj;
-                }
+                GameObject newObj = Instantiate(pool.prefab);
+                return newObj;
             }
         } 
-        
-    
-       
         
         Debug.LogWarning($"No pool or available object found for tag: {tag}");
         return null;

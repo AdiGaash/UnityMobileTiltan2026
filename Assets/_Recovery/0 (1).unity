@@ -414,7 +414,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TaggedObjectPooler
   pools:
   - prefab: {fileID: 8124196946227854450, guid: e0dcc32a2c69c62459f26a1b07549dca, type: 3}
-    initialPoolSize: 20
+    initialPoolSize: 30
     canExtend: 1
   - prefab: {fileID: 7624272258782588007, guid: 044fccedcfe9dd74da4bcc3505ee14e4, type: 3}
     initialPoolSize: 60
@@ -871,19 +871,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.94121844
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.3377987
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -891,7 +891,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 39.486
       objectReference: {fileID: 0}
     - target: {fileID: 3703905256754109747, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
