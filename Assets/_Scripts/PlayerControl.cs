@@ -18,9 +18,12 @@ public class PlayerControl : MonoBehaviour
     private MovementMode movementMode = MovementMode.Platform;
 
     private bool isOnPlatform = true;
-    private bool isOnLadder = false;
+    
+    List <Collider> activeLadders = new List<Collider>();
 
+    private bool isOnLadder => activeLadders.Count > 0;
 
+    
     private Vector3 ladderCenter;
 
     // Platform boundary tracking
@@ -66,7 +69,7 @@ public class PlayerControl : MonoBehaviour
         MovementInput = context.ReadValue<Vector2>();
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         ApplyMovement();
     }
@@ -127,18 +130,20 @@ public class PlayerControl : MonoBehaviour
 
     private Vector3 ClampToPlatformBounds(Vector3 targetPosition)
     {
-       
         if (playerCollider == null) return targetPosition;
 
         // Calculate the effective boundaries considering player size
         float playerHalfWidth = playerCollider.bounds.size.x * 0.5f;
+        float playerHalfHeight = playerCollider.bounds.size.y * 0.5f;
+        
         float leftBound = platformBounds.min.x + playerHalfWidth + boundaryBuffer;
         float rightBound = platformBounds.max.x - playerHalfWidth - boundaryBuffer;
 
         // Clamp horizontal position
         targetPosition.x = Mathf.Clamp(targetPosition.x, leftBound, rightBound);
-        targetPosition.y =
-            platformBounds.max.y + playerCollider.bounds.size.y; // Ensure player stays on top of platform
+        
+        // Ensure player stays on top of platform (bottom of player collider should be at platform top)
+        targetPosition.y = platformBounds.max.y + playerHalfHeight;
 
         return targetPosition;
     }
@@ -148,9 +153,7 @@ public class PlayerControl : MonoBehaviour
 
     private void EnterLadderMode()
     {
-        isOnLadder = true;
         movementMode = MovementMode.Ladder;
-    
         // Snap immediately to ladder
         Vector3 position = transform.position;
 
@@ -163,13 +166,16 @@ public class PlayerControl : MonoBehaviour
 
     private void ExitLadderMode()
     {
-        isOnLadder = false;
         Debug.Log("exit ladder mode");
         movementMode = MovementMode.Platform;
-        // Snap immediately to platform
+        
+        // Snap immediately to platform and ensure within bounds
         Vector3 position = transform.position;
-
-        position.y = platformBounds.max.y + playerCollider.bounds.size.y;
+        if (currentPlatform != null)
+        {
+            position = ClampToPlatformBounds(position);
+        }
+        transform.position = position;
     }
 
     // =========================================================
@@ -180,7 +186,9 @@ public class PlayerControl : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ladder"))
         {
+            activeLadders.Add(other);
             ladderCenter = other.bounds.center;
+            
             EnterLadderMode();
             return;
         }
@@ -206,7 +214,20 @@ public class PlayerControl : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Ladder"))
         {
-            ExitLadderMode();
+            activeLadders.Remove(other);
+            
+            if (isOnLadder)
+            {
+                // Update ladder center to the first remaining ladder
+                if (activeLadders.Count > 0)
+                {
+                    ladderCenter = activeLadders[0].bounds.center;
+                }
+            }
+            else
+            {
+                ExitLadderMode();
+            }
         }
         else if (other.gameObject.CompareTag("Platform"))
         {
@@ -217,6 +238,8 @@ public class PlayerControl : MonoBehaviour
             }
         }
     }
+
+   
 }
 
 
