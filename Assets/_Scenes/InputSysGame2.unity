@@ -304,8 +304,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 110309071}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.12137346, y: 0.07239334, z: -0.008876125, w: 0.9899238}
-  m_LocalPosition: {x: -1.212925, y: 2.7346883, z: -8.912739}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.7346883, z: -8.912739}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -705,7 +705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreUI
   score: {fileID: 11400000, guid: bceac237d8b69ea47a95404a3a4ce131, type: 2}
-  scoreUpdateSpeed: 10
+  scoreUpdateSpeed: 2
 --- !u!1 &681398735
 GameObject:
   m_ObjectHideFlags: 0
@@ -898,8 +898,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5434970051429733648, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
+      propertyPath: m_Radius
+      value: 0.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 5434970051429733648, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5434970051429733648, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
+      propertyPath: m_Center.z
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 5434970051429733648, guid: 61ed7994a2e51644288198faf6a23e71, type: 3}
       propertyPath: m_IsTrigger

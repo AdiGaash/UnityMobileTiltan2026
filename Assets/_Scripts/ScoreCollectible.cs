@@ -44,7 +44,7 @@ public class ScoreCollectible : MonoBehaviour, ICollectible, IPoolableObject
     {
         // Implement coin animation logic here
         // get sound clip length
-        var length = SFX.length;
+        var length = Mathf.Max(SFX.length,5f);
         Vector3 targetPosition = GameObject.FindGameObjectWithTag("ScoreUI").transform.position;
         transform.DOMove(targetPosition, length).SetEase(Ease.InQuad).OnComplete(() =>
         {

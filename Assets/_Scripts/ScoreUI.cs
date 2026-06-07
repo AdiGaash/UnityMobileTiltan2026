@@ -35,14 +35,13 @@ public class ScoreUI : MonoBehaviour
         if (currentDisplayScore < targetScore)
         {
             // Smoothly increase the displayed score towards the target
-            currentDisplayScore ++;
+            currentDisplayScore += scoreUpdateSpeed * Time.deltaTime;
             
             // Clamp to not exceed the target score
             if (currentDisplayScore > targetScore)
             {
                 currentDisplayScore = targetScore;
             }
-            
             UpdateScoreDisplay();
         }
     }
