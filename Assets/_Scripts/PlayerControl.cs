@@ -32,6 +32,8 @@ public class PlayerControl : MonoBehaviour
 
     
     private InputSystemActions inputActions;
+    private bool jumpInputPressed = false;
+    private Coroutine jumpCoroutine;
     
 
     public enum MovementMode
@@ -61,6 +63,7 @@ public class PlayerControl : MonoBehaviour
         inputActions = new InputSystemActions();
         inputActions.Player.Move.performed += OnMoveInput;
         inputActions.Player.Move.canceled += OnMoveInput;
+        inputActions.Player.Jump.performed += OnJumpInput; // Add jump input handling
         inputActions.Enable();
     }
 
@@ -69,7 +72,71 @@ public class PlayerControl : MonoBehaviour
         MovementInput = context.ReadValue<Vector2>();
     }
 
-    private void LateUpdate()
+    private void OnJumpInput(InputAction.CallbackContext context)
+    {
+        jumpInputPressed = context.performed;
+    }
+
+    /// <summary>
+    /// Check if jump input was pressed (called by PowerUpEffect)
+    /// </summary>
+    public bool TryGetJumpInput()
+    {
+        if (jumpInputPressed)
+        {
+            jumpInputPressed = false; // Consume the input
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Perform a jump to a target position
+    /// </summary>
+    public void JumpToPosition(Vector3 targetPosition, float jumpDuration)
+    {
+        if (jumpCoroutine != null)
+        {
+            StopCoroutine(jumpCoroutine);
+        }
+        jumpCoroutine = StartCoroutine(JumpCoroutine(targetPosition, jumpDuration));
+    }
+
+    private System.Collections.IEnumerator JumpCoroutine(Vector3 targetPosition, float duration)
+    {
+        Vector3 startPosition = transform.position;
+        float elapsed = 0f;
+
+        // Clamp target position to platform bounds if on platform
+        if (currentPlatform != null && movementMode == MovementMode.Platform)
+        {
+            targetPosition = ClampToPlatformBounds(targetPosition);
+        }
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = elapsed / duration;
+
+            // Use a parabolic curve for jump arc
+            float height = Mathf.Sin(progress * Mathf.PI) * 2f; // Adjust height multiplier as needed
+
+            Vector3 currentPosition = Vector3.Lerp(startPosition, targetPosition, progress);
+            currentPosition.y += height;
+
+            transform.position = currentPosition;
+            yield return null;
+        }
+
+        // Ensure final position is set correctly
+        transform.position = targetPosition;
+    }
+
+    public bool IsOnLadder => activeLadders.Count > 0;
+    
+    
+    
+     void LateUpdate()
     {
         ApplyMovement();
     }
@@ -238,9 +305,8 @@ public class PlayerControl : MonoBehaviour
             }
         }
     }
-
-   
 }
+
 
 
 
