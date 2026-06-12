@@ -73,7 +73,7 @@ MonoBehaviour:
       m_ProfileName: Default
       m_Values:
       - m_Id: 393cc70c8f9d9d74188f9d1512dae6fc
-        m_Value: https://raw.githubusercontent.com/AdiGaash/UnityMobileTiltan2026/Adressable/ServerData/Android
+        m_Value: https://raw.githubusercontent.com/AdiGaash/UnityMobileTiltan2026/addressable-system/ServerData/Android
       - m_Id: 5661dcc42a49cb848b472f55c9d9fddd
         m_Value: '{UnityEngine.AddressableAssets.Addressables.RuntimePath}/[BuildTarget]'
       - m_Id: 8e07187463ef92541ac9170634682742
