@@ -21,11 +21,12 @@ public class LoadAssetFromDynamicRemoteCatalog : MonoBehaviour
         foreach (var assetKey in remoteAssets)
         {
             Debug.Log($"Found available asset: {assetKey}");
-        
             // Download a specific one when requested by user/logic
             await manager.DownloadAssetAsync(assetKey, progress => {
                 Debug.Log($"Download progress for {assetKey}: {progress * 100}%");
             });
+            //instantiate
+            await manager.LoadAssetAsync(assetKey);
         }
     }
 }

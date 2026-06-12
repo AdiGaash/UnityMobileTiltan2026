@@ -108,4 +108,20 @@ public class RemoteContentManager : MonoBehaviour
         await handle.Task;
         return handle.Result;
     }
+    
+    // New method to instantiate assets at specific positions
+    public async Task SpawnRemoteAsset(string key, Vector3 position, Quaternion rotation)
+    {
+        var handle = Addressables.InstantiateAsync(key, position, rotation);
+        await handle.Task;
+        
+        if (handle.Status == AsyncOperationStatus.Succeeded)
+        {
+            Debug.Log($"Spawned {key} at {position}");
+        }
+        else
+        {
+            Debug.LogError($"Failed to spawn {key}");
+        }
+    }
 }
