@@ -15,17 +15,29 @@ public class RemoteContentManager : MonoBehaviour
     {
         Debug.Log("Checking for catalog updates...");
         
-        // 1. Update the content catalog from the server
-        var handle = Addressables.UpdateCatalogs(); 
-        await handle.Task;
+        try 
+        {
+            var handle = Addressables.UpdateCatalogs();
+            await handle.Task;
 
-        if (handle.Status == AsyncOperationStatus.Succeeded)
-        {
-            Debug.Log("Catalog updated successfully.");
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+            {
+                Debug.Log("Catalog updated successfully.");
+            }
+            Addressables.Release(handle);
         }
-        else
+        catch (Exception e)
         {
-            Debug.LogError("Failed to update catalog.");
+            // We catch the exception because "Content update not available" 
+            // is considered an exception by Unity, but it's actually a normal state.
+            if (e.Message.Contains("Content update not available"))
+            {
+                Debug.Log("Catalog is already up to date.");
+            }
+            else
+            {
+                Debug.LogError($"Unexpected error updating catalog: {e.Message}");
+            }
         }
     }
 
