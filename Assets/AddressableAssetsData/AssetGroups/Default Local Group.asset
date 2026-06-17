@@ -21,12 +21,6 @@ MonoBehaviour:
     m_SerializedLabels:
     - RemoteContent
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 4c98b0d0281250e49a7bb3edd2e372c5
-    m_Address: Assets/_Prefabs/StarCoin.prefab
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - RemoteContent
-    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 86cfa749c64fe2244a9cc58c8654cce5, type: 2}
   m_SchemaSet:

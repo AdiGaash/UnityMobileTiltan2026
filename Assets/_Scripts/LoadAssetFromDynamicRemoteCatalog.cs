@@ -25,8 +25,15 @@ public class LoadAssetFromDynamicRemoteCatalog : MonoBehaviour
             await manager.DownloadAssetAsync(assetKey, progress => {
                 Debug.Log($"Download progress for {assetKey}: {progress * 100}%");
             });
+            
+            
             //instantiate
-            await manager.LoadAssetAsync(assetKey);
+            var newAddressableGameObject = await manager.LoadAssetAsync(assetKey);
+            if (newAddressableGameObject != null)
+            {
+                newAddressableGameObject.transform.position = new Vector3(0, 0, 0);
+            }
+            
         }
     }
 }
