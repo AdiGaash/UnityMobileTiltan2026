@@ -21,6 +21,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - RemoteContent
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 51da46dfd3c13654dabde34d9dded94b
+    m_Address: Assets/_Prefabs/WoodenBase.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 86cfa749c64fe2244a9cc58c8654cce5, type: 2}
   m_SchemaSet:
