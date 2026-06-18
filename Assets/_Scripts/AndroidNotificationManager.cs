@@ -39,15 +39,16 @@ public class AndroidNotificationManager : MonoBehaviour
     /// <summary>
     /// Call this method to schedule a notification for the future.
     /// </summary>
-    public void ScheduleNotification(int secondsFromNow)
+    public int ScheduleNotification(int secondsFromNow)
     {
         var notification = new AndroidNotification();
         notification.Title = "Reminder!";
         notification.Text = "You scheduled this notification to appear.";
         notification.FireTime = System.DateTime.Now.AddSeconds(secondsFromNow);
 
-        AndroidNotificationCenter.SendNotification(notification, ChannelId);
+        int id = AndroidNotificationCenter.SendNotification(notification, ChannelId);
         Debug.Log($"Notification scheduled in {secondsFromNow} seconds.");
+        return id;
     }
     
     public void CancelAllNotifications()
